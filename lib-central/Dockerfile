@@ -7,14 +7,14 @@ RUN go mod download
 
 COPY *.go ./
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o central-lib
+RUN CGO_ENABLED=0 GOOS=linux go build -o lib-central
 
 FROM scratch
 
-COPY --from=builder /app/central-lib /central-lib
+COPY --from=builder /app/lib-central /lib-central
 
 EXPOSE 8080
 
 ENV PORT=:8080
 
-ENTRYPOINT ["/central-lib"]
+ENTRYPOINT ["/lib-central"]
