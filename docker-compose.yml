@@ -1,0 +1,104 @@
+version: '3.1'
+
+services:
+
+  lib-central:
+    build: ./lib-central
+    container_name: lib-central
+    ports: 
+      - 8081:8080
+    environment:
+      - PORT=:8080
+      - DB_CONNECTION_STRING=postgres://postgres:pass@db-central/postgres?sslmode=disable
+    depends_on:
+      - db-central
+
+  lib-bg:
+    build: ./lib-city
+    container_name: lib-bg
+    ports: 
+      - 8082:8080
+    environment:
+      - PORT=:8080
+      - CENTRAL_LIB_BASE_URL=http://lib-central:8080
+      - DB_CONNECTION_STRING=postgres://postgres:pass@db-bg/postgres?sslmode=disable
+    depends_on:
+      - db-bg
+      - lib-central
+
+  lib-ns:
+    build: ./lib-city
+    container_name: lib-ns
+    ports: 
+      - 8083:8080
+    environment:
+      - PORT=:8080
+      - CENTRAL_LIB_BASE_URL=http://lib-central:8080
+      - DB_CONNECTION_STRING=postgres://postgres:pass@db-ns/postgres?sslmode=disable
+    depends_on:
+      - db-ns
+      - lib-central
+
+  lib-ni:
+    build: ./lib-city
+    container_name: lib-ni
+    ports: 
+      - 8084:8080
+    environment:
+      - PORT=:8080
+      - CENTRAL_LIB_BASE_URL=http://lib-central:8080
+      - DB_CONNECTION_STRING=postgres://postgres:pass@db-ni/postgres?sslmode=disable
+    depends_on:
+      - db-ni
+      - lib-central
+
+  db-central:
+    image: postgres:15-alpine
+    container_name: db-central
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - db_central:/var/lib/postgresql/data
+
+  db-bg:
+    image: postgres:15-alpine
+    container_name: db-bg
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - db_bg:/var/lib/postgresql/data
+
+  db-ns:
+    image: postgres:15-alpine
+    container_name: db-ns
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - db_ns:/var/lib/postgresql/data
+
+  db-ni:
+    image: postgres:15-alpine
+    container_name: db-ni
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - db_ni:/var/lib/postgresql/data
+
+  adminer:
+      image: adminer
+      container_name: adminer
+      restart: always
+      ports:
+        - 8080:8080
+
+volumes:
+  db_central: {}
+  db_bg: {}
+  db_ns: {}
+  db_ni: {}
