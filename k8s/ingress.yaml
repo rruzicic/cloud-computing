@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lib-central-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: "/$2"
+spec:
+  rules:
+    - host: "library.info"
+      http:
+        paths:
+          - path: /central(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: central-lib-svc
+                port:
+                  number: 80
+          - path: /bg(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: bg-lib-svc
+                port:
+                  number: 80
+          - path: /ns(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: ns-lib-svc
+                port:
+                  number: 80
+          - path: /ni(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: ni-lib-svc
+                port:
+                  number: 80
