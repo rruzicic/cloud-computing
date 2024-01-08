@@ -1,29 +1,29 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: central-lib-svc
+  name: bg-lib-svc
   labels:
-    app: central-lib
+    app: bg-lib
 spec:
   type: NodePort
   ports:
-    - nodePort: 31035
+    - nodePort: 31036
       port: 80
       protocol: TCP
       targetPort: 8080
-      name: central-lib
+      name: bg-lib
   selector:
-    app: central-lib
+    app: bg-lib
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: central-lib
+  name: bg-lib
 spec:
   selector:
     matchLabels:
-      app: central-lib
-  serviceName: "central-lib"
+      app: bg-lib
+  serviceName: "bg-lib"
   replicas: 1
   minReadySeconds: 10
   updateStrategy:
@@ -31,23 +31,25 @@ spec:
   template:
     metadata:
       labels:
-        app: central-lib
+        app: bg-lib
     spec:
       terminationGracePeriodSeconds: 10
       containers:
-        - name: central-lib
-          image: rruzicic1/lib-central
+        - name: bg-lib
+          image: rruzicic1/lib-city
           ports:
             - containerPort: 8080
-              name: central-lib
+              name: bg-lib
           env:
             - name: DB_CONNECTION_STRING
               value: postgres://postgres:pass@localhost:5432/postgres?sslmode=disable
-        - name: central-db
+            - name: CENTRAL_LIB_BASE_URL
+              value: http://central-lib-svc
+        - name: bg-db
           image: postgres:15-alpine
           ports:
             - containerPort: 5432
-              name: central-db
+              name: bg-db
           env:
             - name: POSTGRES_PASSWORD
               value: pass

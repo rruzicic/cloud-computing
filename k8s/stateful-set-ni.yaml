@@ -1,29 +1,29 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: central-lib-svc
+  name: ni-lib-svc
   labels:
-    app: central-lib
+    app: ni-lib
 spec:
   type: NodePort
   ports:
-    - nodePort: 31035
+    - nodePort: 31038
       port: 80
       protocol: TCP
       targetPort: 8080
-      name: central-lib
+      name: ni-lib
   selector:
-    app: central-lib
+    app: ni-lib
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: central-lib
+  name: ni-lib
 spec:
   selector:
     matchLabels:
-      app: central-lib
-  serviceName: "central-lib"
+      app: ni-lib
+  serviceName: "ni-lib"
   replicas: 1
   minReadySeconds: 10
   updateStrategy:
@@ -31,23 +31,25 @@ spec:
   template:
     metadata:
       labels:
-        app: central-lib
+        app: ni-lib
     spec:
       terminationGracePeriodSeconds: 10
       containers:
-        - name: central-lib
-          image: rruzicic1/lib-central
+        - name: ni-lib
+          image: rruzicic1/lib-city
           ports:
             - containerPort: 8080
-              name: central-lib
+              name: ni-lib
           env:
             - name: DB_CONNECTION_STRING
               value: postgres://postgres:pass@localhost:5432/postgres?sslmode=disable
-        - name: central-db
+            - name: CENTRAL_LIB_BASE_URL
+              value: http://central-lib-svc
+        - name: ni-db
           image: postgres:15-alpine
           ports:
             - containerPort: 5432
-              name: central-db
+              name: ni-db
           env:
             - name: POSTGRES_PASSWORD
               value: pass
