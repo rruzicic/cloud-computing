@@ -5,10 +5,9 @@ metadata:
   labels:
     app: ni-lib
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
-    - nodePort: 31038
-      port: 80
+    - port: 80
       protocol: TCP
       targetPort: 8080
       name: ni-lib

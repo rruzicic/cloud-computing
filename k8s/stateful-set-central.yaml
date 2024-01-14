@@ -5,10 +5,9 @@ metadata:
   labels:
     app: central-lib
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
-    - nodePort: 31035
-      port: 80
+    - port: 80
       protocol: TCP
       targetPort: 8080
       name: central-lib
